@@ -7,63 +7,10 @@ Original file is located at
     https://colab.research.google.com/github/tensorflow/docs/blob/master/site/en/tutorials/text/transformer.ipynb
 
 ##### Copyright 2019 The TensorFlow Authors.
+
+##### Modified by Roman.Salmin@gmail.com 
 """
 
-#@title Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# https://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-"""# Transformer model for language understanding
-
-<table class="tfo-notebook-buttons" align="left">
-  <td>
-    <a target="_blank" href="https://www.tensorflow.org/tutorials/text/transformer">
-    <img src="https://www.tensorflow.org/images/tf_logo_32px.png" />
-    View on TensorFlow.org</a>
-  </td>
-  <td>
-    <a target="_blank" href="https://colab.research.google.com/github/tensorflow/docs/blob/master/site/en/tutorials/text/transformer.ipynb">
-    <img src="https://www.tensorflow.org/images/colab_logo_32px.png" />
-    Run in Google Colab</a>
-  </td>
-  <td>
-    <a target="_blank" href="https://github.com/tensorflow/docs/blob/master/site/en/tutorials/text/transformer.ipynb">
-    <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
-    View source on GitHub</a>
-  </td>
-  <td>
-    <a href="https://storage.googleapis.com/tensorflow_docs/docs/site/en/tutorials/text/transformer.ipynb"><img src="https://www.tensorflow.org/images/download_logo_32px.png" />Download notebook</a>
-  </td>
-</table>
-
-This tutorial trains a <a href="https://arxiv.org/abs/1706.03762" class="external">Transformer model</a> to translate Portuguese to English. This is an advanced example that assumes knowledge of [text generation](text_generation.ipynb) and [attention](nmt_with_attention.ipynb).
-
-The core idea behind the Transformer model is *self-attention*—the ability to attend to different positions of the input sequence to compute a representation of that sequence. Transformer creates stacks of self-attention layers and is explained below in the sections *Scaled dot product attention* and *Multi-head attention*.
-
-A transformer model handles variable-sized input using stacks of self-attention layers instead of [RNNs](text_classification_rnn.ipynb) or [CNNs](../images/intro_to_cnns.ipynb). This general architecture has a number of advantages:
-
-* It make no assumptions about the temporal/spatial relationships across the data. This is ideal for processing a set of objects (for example, [StarCraft units](https://deepmind.com/blog/alphastar-mastering-real-time-strategy-game-starcraft-ii/#block-8)).
-* Layer outputs can be calculated in parallel, instead of a series like an RNN.
-* Distant items can affect each other's output without passing through many RNN-steps, or convolution layers (see [Scene Memory Transformer](https://arxiv.org/pdf/1903.03878.pdf) for example).
-* It can learn long-range dependencies. This is a challenge in many sequence tasks.
-
-The downsides of this architecture are:
-
-* For a time-series, the output for a time-step is calculated from the *entire history* instead of only the inputs and current hidden-state. This _may_ be less efficient.   
-* If the input *does* have a  temporal/spatial relationship, like text, some positional encoding must be added or the model will effectively see a bag of words. 
-
-After training the model in this notebook, you will be able to input a Portuguese sentence and return the English translation.
-
-<img src="https://www.tensorflow.org/images/tutorials/transformer/attention_map_portuguese.png" width="800" alt="Attention heatmap">
-"""
 
 # Commented out IPython magic to ensure Python compatibility.
 from __future__ import absolute_import, division, print_function, unicode_literals
@@ -970,17 +917,14 @@ def translate(sentence, plot=''):
     plot_attention_weights(attention_weights, sentence, result, plot)
 
 translate("я завтра пойду в школу.")
-print ("Real translation: this is a problem we have to solve .")
 
 translate("на столе лежит яблоко.")
-print ("Real translation: and my neighboring homes heard about this idea .")
 
 translate("ну где же ручки, ну где же ваши ручки?")
-print ("Real translation: so i 'll just share with you some stories very quickly of some magical things that have happened .")
 
 """You can pass different layers and attention blocks of the decoder to the `plot` parameter."""
 
-translate("это превая книга которую я прочитал.", plot='decoder_layer4_block2')
+translate("это первая книга которую я прочитал.", plot='decoder_layer4_block2')
 print ("Real translation: this is the first book i've ever done.")
 
 """## Summary
