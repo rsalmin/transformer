@@ -4,3 +4,5 @@
 /ru.dev
 /ru.test
 /ru.train
+/tokenizer_ru.subwords
+/tokenizer_en.subwords

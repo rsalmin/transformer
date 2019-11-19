@@ -1,0 +1,24 @@
+md5: fb8808acb38a5f87a7a61daa2c19205f
+cmd: python makeTokenizers.py
+deps:
+- md5: 619ba7cbd3d34e816085c34115bebe3d
+  path: makeTokenizers.py
+- md5: 58b237508eb50bf523284c69e9c87508
+  path: data/ru.dev
+- md5: 341ba6228cb2781c933de53384bb0495
+  path: data/ru.train
+- md5: 0a82151d8b3e0056543e00a4b2c43d26
+  path: data/en.dev
+- md5: 290e47479e6c5e28f7b90853f384cc1b
+  path: data/en.train
+outs:
+- md5: ecfee4ef4378c7f66c2cde1b678c287a
+  path: data/tokenizer_ru.subwords
+  cache: true
+  metric: false
+  persist: false
+- md5: 0010cd461417156781e91990e430da67
+  path: data/tokenizer_en.subwords
+  cache: true
+  metric: false
+  persist: false
