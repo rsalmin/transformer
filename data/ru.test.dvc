@@ -1,0 +1,7 @@
+md5: 185e4b36b35764195a7c9ee605972dd0
+outs:
+- md5: 8ca05a40bf925d02c420b3a620b155a7
+  path: ru.test
+  cache: true
+  metric: false
+  persist: false

@@ -1,0 +1,7 @@
+md5: 5d5b2bf12f4614efb8de6a0586fdcfdc
+outs:
+- md5: 341ba6228cb2781c933de53384bb0495
+  path: ru.train
+  cache: true
+  metric: false
+  persist: false

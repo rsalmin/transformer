@@ -1,0 +1,7 @@
+md5: 38af9532f3f0d887fe0d19b61a7c5c03
+outs:
+- md5: 58b237508eb50bf523284c69e9c87508
+  path: ru.dev
+  cache: true
+  metric: false
+  persist: false

@@ -1,0 +1,7 @@
+md5: 5d332612e4136dffb957ff347d20157f
+outs:
+- md5: 290e47479e6c5e28f7b90853f384cc1b
+  path: en.train
+  cache: true
+  metric: false
+  persist: false
