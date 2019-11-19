@@ -1,0 +1,4 @@
+['remote "local"']
+url = /home/rsalmin/dvc-storage
+[core]
+remote = local
