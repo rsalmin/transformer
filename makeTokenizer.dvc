@@ -1,7 +1,9 @@
-md5: fb8808acb38a5f87a7a61daa2c19205f
+md5: 2e901f43655a57ed2bcbf30ca0125913
 cmd: python makeTokenizers.py
 deps:
-- md5: 619ba7cbd3d34e816085c34115bebe3d
+- md5: a4002ab417f90c0f7fcdd9f4b58e5184
+  path: inputData.py
+- md5: e35e9be7e8004494f03c8191dd399575
   path: makeTokenizers.py
 - md5: 58b237508eb50bf523284c69e9c87508
   path: data/ru.dev
