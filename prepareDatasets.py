@@ -6,6 +6,7 @@ import inputData
 import numpy as np
 import os.path
 
+
 dataPath = 'data'
 trainDatasetPath = os.path.join(dataPath, 'train_dataset')
 valDatasetPath = os.path.join(dataPath, 'val_dataset')
@@ -76,3 +77,28 @@ val_dataset = val_dataset.filter(filter_max_length).padded_batch(
 
 #writer_val = tf.data.experimental.TFRecordWriter(valDatasetPath)
 #writer_val.write(val_dataset)
+
+if __name__ == '__main__':
+    import matplotlib.pyplot as plt
+
+    encodedDataset = inputData.train_examples.map(tf_encode)
+    size_dataset = encodedDataset.map(lambda x, y: (tf.size(x), tf.size(y)) )
+    xlist = []
+    ylist = []
+    dataset_len = 0
+    passed_num = 0
+    for x, y in size_dataset:
+        xlist.append(x)
+        ylist.append(y)
+        dataset_len += 1
+        if x <= MAX_LENGTH and y <= MAX_LENGTH:
+            passed_num += 1
+
+    print(f'with max_len={MAX_LENGTH} passed {np.round(100*passed_num/dataset_len, 1)} % out of {dataset_len} sentences')
+
+    maxN = max(np.max(xlist), np.max(ylist))
+    print(f'max encoded lenght {maxN}')
+    fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True)
+    ax1.hist(xlist, bins=range(maxN))
+    ax2.hist(ylist, bins=range(maxN))
+    fig.savefig('sizes.pdf')
