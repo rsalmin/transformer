@@ -633,7 +633,7 @@ As the transformer predicts each word, *self-attention* allows it to look at the
 To prevent the model from peaking at the expected output the model uses a look-ahead mask.
 """
 
-EPOCHS = 1
+EPOCHS = 20
 
 # The @tf.function trace-compiles train_step into a TF graph for faster
 # execution. The function specializes to the precise shape of the argument
@@ -694,5 +694,120 @@ for epoch in range(EPOCHS):
 
   print ('Time taken for 1 epoch: {} secs\n'.format(time.time() - start))
 
+"""## Evaluate
 
-tf.saved_model.save(transformer, 'models/transformer/1')
+The following steps are used for evaluation:
+
+* Encode the input sentence using the Portuguese tokenizer (`tokenizer_pt`). Moreover, add the start and end token so the input is equivalent to what the model is trained with. This is the encoder input.
+* The decoder input is the `start token == tokenizer_en.vocab_size`.
+* Calculate the padding masks and the look ahead masks.
+* The `decoder` then outputs the predictions by looking at the `encoder output` and its own output (self-attention).
+* Select the last word and calculate the argmax of that.
+* Concatentate the predicted word to the decoder input as pass it to the decoder.
+* In this approach, the decoder predicts the next word based on the previous words it predicted.
+
+Note: The model used here has less capacity to keep the example relatively faster so the predictions maybe less right. To reproduce the results in the paper, use the entire dataset and base transformer model or transformer XL, by changing the hyperparameters above.
+"""
+
+def evaluate(inp_sentence):
+  start_token = [tokenizer_pt.vocab_size]
+  end_token = [tokenizer_pt.vocab_size + 1]
+
+  # inp sentence is portuguese, hence adding the start and end token
+  inp_sentence = start_token + tokenizer_pt.encode(inp_sentence) + end_token
+  encoder_input = tf.expand_dims(inp_sentence, 0)
+
+  # as the target is english, the first word to the transformer should be the
+  # english start token.
+  decoder_input = [tokenizer_en.vocab_size]
+  output = tf.expand_dims(decoder_input, 0)
+
+  for i in range(MAX_LENGTH):
+    enc_padding_mask, combined_mask, dec_padding_mask = create_masks(
+        encoder_input, output)
+
+    # predictions.shape == (batch_size, seq_len, vocab_size)
+    predictions, attention_weights = transformer(encoder_input,
+                                                 output,
+                                                 False,
+                                                 enc_padding_mask,
+                                                 combined_mask,
+                                                 dec_padding_mask)
+
+    # select the last word from the seq_len dimension
+    predictions = predictions[: ,-1:, :]  # (batch_size, 1, vocab_size)
+
+    predicted_id = tf.cast(tf.argmax(predictions, axis=-1), tf.int32)
+
+    # return the result if the predicted_id is equal to the end token
+    if predicted_id == tokenizer_en.vocab_size+1:
+      return tf.squeeze(output, axis=0), attention_weights
+
+    # concatentate the predicted_id to the output which is given to the decoder
+    # as its input.
+    output = tf.concat([output, predicted_id], axis=-1)
+
+  return tf.squeeze(output, axis=0), attention_weights
+
+def plot_attention_weights(attention, sentence, result, layer):
+  fig = plt.figure(figsize=(16, 8))
+
+  sentence = tokenizer_pt.encode(sentence)
+
+  attention = tf.squeeze(attention[layer], axis=0)
+
+  for head in range(attention.shape[0]):
+    ax = fig.add_subplot(2, 4, head+1)
+
+    # plot the attention weights
+    ax.matshow(attention[head][:-1, :], cmap='viridis')
+
+    fontdict = {'fontsize': 10}
+
+    ax.set_xticks(range(len(sentence)+2))
+    ax.set_yticks(range(len(result)))
+
+    ax.set_ylim(len(result)-1.5, -0.5)
+
+    ax.set_xticklabels(
+        ['<start>']+[tokenizer_pt.decode([i]) for i in sentence]+['<end>'],
+        fontdict=fontdict, rotation=90)
+
+    ax.set_yticklabels([tokenizer_en.decode([i]) for i in result
+                        if i < tokenizer_en.vocab_size],
+                       fontdict=fontdict)
+
+    ax.set_xlabel('Head {}'.format(head+1))
+
+  plt.tight_layout()
+  plt.show()
+
+def translate(sentence, plot=''):
+  result, attention_weights = evaluate(sentence)
+
+  predicted_sentence = tokenizer_en.decode([i for i in result
+                                            if i < tokenizer_en.vocab_size])
+
+  print('Input: {}'.format(sentence))
+  print('Predicted translation: {}'.format(predicted_sentence))
+
+  if plot:
+    plot_attention_weights(attention_weights, sentence, result, plot)
+
+translate("я завтра пойду в школу.")
+
+translate("на столе лежит яблоко.")
+
+translate("ну где же ручки, ну где же ваши ручки?")
+
+"""You can pass different layers and attention blocks of the decoder to the `plot` parameter."""
+
+translate("это первая книга которую я прочитал.", plot='decoder_layer4_block2')
+print ("Real translation: this is the first book i've ever done.")
+
+"""## Summary
+
+In this tutorial, you learned about positional encoding, multi-head attention, the importance of masking and how to create a transformer.
+
+Try using a different dataset to train the transformer. You can also create the base transformer or transformer XL by changing the hyperparameters above. You can also use the layers defined here to create [BERT](https://arxiv.org/abs/1810.04805) and train state of the art models. Futhermore, you can implement beam search to get better predictions.
+"""
